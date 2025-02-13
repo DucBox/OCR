@@ -4,19 +4,44 @@ import numpy as np
 import json
 import streamlit as st
 
+import firebase_admin
+from firebase_admin import credentials, firestore
+import json
+import streamlit as st
 
-# 🔥 Kết nối Firestore
-# cred = credentials.Certificate("src/face-embeddings-firebase-adminsdk-fbsvc-3ab14b0c36.json") 
-# 🟢 Lấy secrets từ Streamlit Cloud
-# firebase_secrets = json.loads(st.secrets["firebase"])
-st.write(st.secrets["firebase"])
-firebase_secrets = st.secrets["firebase"]
-# 🔥 Khởi tạo Firebase chỉ khi chưa được init
-if not firebase_admin._apps:
-    cred = credentials.Certificate(firebase_secrets)  # ✅ Truyền dict trực tiếp
-    firebase_admin.initialize_app(cred)
+# 🟢 DEBUG: Kiểm tra Streamlit secrets
+st.write("🔍 DEBUG: Firebase Secrets Type:", type(st.secrets["firebase"]))
 
-db = firestore.client()
+try:
+    # 🔥 Chuyển AttrDict về dict
+    firebase_secrets = json.loads(json.dumps(st.secrets["firebase"]))
+    
+    # 🟢 DEBUG: Kiểm tra dữ liệu đã convert
+    st.write("✅ DEBUG: Firebase Secrets Converted Type:", type(firebase_secrets))
+
+    # 🔥 Kiểm tra xem có key `private_key` không
+    if "private_key" not in firebase_secrets:
+        st.error("❌ ERROR: `private_key` không có trong secrets! Kiểm tra lại cấu hình Streamlit.")
+        st.stop()
+
+    # 🔥 Kiểm tra format của `private_key`
+    if not firebase_secrets["private_key"].startswith("-----BEGIN PRIVATE KEY-----"):
+        st.error("❌ ERROR: `private_key` format sai! Xem lại cách nhập vào Streamlit secrets.")
+        st.write("🔍 private_key hiện tại:", firebase_secrets["private_key"])  # 🟢 Debug giá trị
+        st.stop()
+
+    # 🔥 Khởi tạo Firebase nếu chưa được init
+    if not firebase_admin._apps:
+        cred = credentials.Certificate(firebase_secrets)  # ✅ Truyền dict đã sửa lỗi
+        firebase_admin.initialize_app(cred)
+
+    db = firestore.client()
+    st.write("✅ Firebase kết nối thành công!")  # 🟢 Debug thành công
+
+except Exception as e:
+    st.error(f"❌ ERROR: Firebase init thất bại: {e}")
+    st.stop()
+
 # ✅ Hàm lưu embeddings vào Firestore theo user_id
 def save_embeddings_to_firestore(user_id, embeddings):
     """

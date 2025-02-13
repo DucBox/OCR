@@ -22,7 +22,7 @@ from src.text_detection import detect_text_regions
 from src.text_recognition import load_vietocr, extract_text_from_boxes
 from src.database import save_embeddings_to_firestore, get_embeddings_from_firestore
 
-st.write("🔍 Debug Firebase Secrets:", st.secrets["firebase"])
+st.write("🔍 Debug Firebase Secrets:", firebase_secrets)
 
 st.title("🆔 Face Verification & CCCD Extraction")
 
