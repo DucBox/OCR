@@ -1,0 +1,10 @@
+streamlit
+opencv-python
+numpy
+Pillow
+matplotlib
+torch
+torchvision
+ultralytics
+pillow-heif
+git+https://github.com/pbcquoc/vietocr.git
