@@ -18,22 +18,22 @@ def embed_face_cccd(face_detector, facenet_model, image):
     # 1️⃣ Đọc ảnh CCCD
     if image is None:
         print("[ERROR] Không thể đọc ảnh CCCD!")
-        return None
+        return None, "❌ Không thể đọc ảnh CCCD! Hãy chụp lại ảnh rõ nét hơn."
 
     # 2️⃣ Phát hiện khuôn mặt
     bboxes = detect(image, face_detector)
     if not bboxes:
         print("[ERROR] Không tìm thấy khuôn mặt trong CCCD!")
-        return None
+        return None, "❌ Không tìm thấy khuôn mặt trong ảnh CCCD! Hãy chụp lại với góc nhìn rõ hơn."
 
     # 3️⃣ Crop khuôn mặt (do CCCD chỉ có 1 khuôn mặt, lấy bbox đầu tiên)
     face_image = crop(image, bboxes[0])
     if face_image is None:
         print("[ERROR] Không thể crop khuôn mặt từ ảnh CCCD!")
-        return None
+        return None, "❌ Không thể crop khuôn mặt từ ảnh CCCD! Hãy chụp lại với ánh sáng tốt hơn."
 
     # 4️⃣ Embed khuôn mặt
-    return embed_facenet(face_image, facenet_model)
+    return embed_facenet(face_image, facenet_model), None
 
 def verify_identity(face_embedding, embedding_data, threshold=0.7):
     """

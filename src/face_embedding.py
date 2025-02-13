@@ -47,11 +47,4 @@ def embedding(face_detector, facenet_model, video):
             key = f"frame_{sec}_{frame_pos}_{i}"
             embeddings[key] = face_embedding
 
-    # 7️⃣ Lưu embeddings vào file
-    # if embeddings:
-    #     save_embeddings(embeddings)
-    #     print(f"[INFO] Đã lưu {len(embeddings)} embeddings vào {FACE_EMBEDDINGS_PATH}")
-    # else:
-    #     print("[WARNING] Không có embeddings nào được lưu!")
-
     return embeddings
