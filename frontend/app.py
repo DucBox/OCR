@@ -76,7 +76,7 @@ if video_file is not None and not st.session_state.embeddings_done:
     video_array = np.frombuffer(video_bytes, np.uint8)
 
     # 🟢 Giải mã video từ buffer bằng OpenCV
-    video_cap = cv2.VideoCapture())
+    video_cap = cv2.VideoCapture()
 
     if not video_cap.isOpened():
         st.error("❌ Không thể mở video! Hãy thử upload lại.")
