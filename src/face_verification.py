@@ -33,7 +33,12 @@ def embed_face_cccd(face_detector, facenet_model, image):
         return None, "❌ Không thể crop khuôn mặt từ ảnh CCCD! Hãy chụp lại với ánh sáng tốt hơn."
 
     # 4️⃣ Embed khuôn mặt
-    return embed_facenet(face_image, facenet_model), None
+    face_embedding = embed_facenet(face_image, facenet_model)
+
+    if face_embedding is None:
+        return None, "❌ Không thể tạo vector embedding từ khuôn mặt!"
+
+    return face_embedding, None  # ✅ Luôn trả về 2 giá trị
 
 def verify_identity(face_embedding, embedding_data, threshold=0.7):
     """
