@@ -128,6 +128,9 @@ if st.session_state.embeddings_done:
         status.write("🧑‍💻 **Đang tạo embeddings từ ảnh CCCD...**")
         face_embedding_cccd, error = embed_face_cccd(face_model, facenet_model, image_np)
         # status.empty()  # ❌ Xóa dòng trạng thái
+        if error_message:
+            st.error(error_message)  # Hiển thị lỗi trên UI
+            st.stop()
         
         user_embeddings = get_embeddings_from_firestore(user_id)
         if user_embeddings is None:
