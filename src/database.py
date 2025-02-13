@@ -4,15 +4,17 @@ import numpy as np
 import json
 import streamlit as st
 
-firebase_secrets = st.secrets["firebase"]
 
 # 🔥 Kết nối Firestore
 # cred = credentials.Certificate("src/face-embeddings-firebase-adminsdk-fbsvc-3ab14b0c36.json") 
-cred = credentials.Certificate(firebase_secrets)
+# 🟢 Lấy secrets từ Streamlit Cloud
+firebase_secrets = json.loads(st.secrets["firebase"])
+# 🔥 Khởi tạo Firebase chỉ khi chưa được init
 if not firebase_admin._apps:
+    cred = credentials.Certificate(firebase_secrets)  # ✅ Truyền dict trực tiếp
     firebase_admin.initialize_app(cred)
-db = firestore.client()
 
+db = firestore.client()
 # ✅ Hàm lưu embeddings vào Firestore theo user_id
 def save_embeddings_to_firestore(user_id, embeddings):
     """
