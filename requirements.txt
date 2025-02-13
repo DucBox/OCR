@@ -13,3 +13,4 @@ python-dateutil
 tqdm
 git+https://github.com/pbcquoc/vietocr.git
 scikit-learn
+facenet-pytorch
