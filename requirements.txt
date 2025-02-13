@@ -7,4 +7,9 @@ torch
 torchvision
 ultralytics
 pillow-heif
+firebase-admin
+timm
+python-dateutil
+tqdm
 git+https://github.com/pbcquoc/vietocr.git
+scikit-learn
