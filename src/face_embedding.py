@@ -4,46 +4,46 @@ from src.config import FACE_EMBEDDINGS_PATH
 
 def embedding(face_detector, facenet_model, video):
     """
-    Pipeline xử lý video:
-    1. Trích xuất frames đầu-giữa-cuối mỗi giây.
-    2. Phát hiện khuôn mặt trên mỗi frame.
-    3. Crop và embed khuôn mặt bằng FaceNet.
-    4. Lưu embeddings vào database.
+    Video processing pipeline:
+    1. Extract first-mid-last frames every second.
+    2. Detect faces in each frame.
+    3. Crop and embed faces using FaceNet.
+    4. Save embeddings to database.
 
     Args:
-        video_path (str): Đường dẫn video đầu vào.
+    video: Input video
 
     Returns:
-        dict: Dictionary chứa embeddings của các khuôn mặt.
+    dict: Dictionary containing embeddings of faces
     """
-    print(f"[INFO] Bắt đầu xử lý video")
+    print(f"[INFO] Start processing Video")
 
-    # 1️⃣ Trích xuất frames từ video
+    # 1️⃣ Extract frames from video
     frames = extract_frames(video)
     if not frames:
-        print("[ERROR] Không có frame nào được trích xuất!")
+        print("[ERROR] No frame extracted")
         return {}
 
     embeddings = {}
 
-    # 2️⃣ Xử lý từng frame
+    # 2️⃣ Process each frame
     for sec, frame_pos, frame in frames:
-        # 3️⃣ Phát hiện khuôn mặt
+        # 3️⃣ Detect Face
         bboxes = detect(frame, face_detector)
         if not bboxes:
-            print(f"[WARNING] Không tìm thấy khuôn mặt tại giây {sec}")
+            print(f"[WARNING] No face detected at {sec}")
             continue
 
         for i, bbox in enumerate(bboxes):
-            # 4️⃣ Crop khuôn mặt
+            # 4️⃣ Crop Face
             face_image = crop(frame, bbox)
             if face_image is None:
                 continue
 
-            # 5️⃣ Embed bằng FaceNet
+            # 5️⃣ Embed using FaceNet
             face_embedding = embed_facenet(face_image, facenet_model)
 
-            # 6️⃣ Lưu vào dictionary
+            # 6️⃣ Save into dictionary
             key = f"frame_{sec}_{frame_pos}_{i}"
             embeddings[key] = face_embedding
 

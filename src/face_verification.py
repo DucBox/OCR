@@ -7,61 +7,63 @@ from src.config import (
 
 def embed_face_cccd(face_detector, facenet_model, image):
     """
-    Nhận diện và crop khuôn mặt từ ảnh CCCD.
+    Detect and crop faces from CCCD images.
 
     Args:
-        cccd_image_path (str): Đường dẫn ảnh CCCD.
+    image(np.array): CCCD image.
 
     Returns:
-        numpy.ndarray | None: Vector đặc trưng nếu tìm thấy khuôn mặt, None nếu không có khuôn mặt.
+    n[].ndarray | None: Feature vector if face found, None if no face.
+
     """
-    # 1️⃣ Đọc ảnh CCCD
+    # 1️⃣ Read CCCD image
     if image is None:
-        print("[ERROR] Không thể đọc ảnh CCCD!")
+        print("[ERROR] Can not load image!")
         return None, "❌ Không thể đọc ảnh CCCD! Hãy chụp lại ảnh rõ nét hơn."
 
-    # 2️⃣ Phát hiện khuôn mặt
+    # 2️⃣ Detect face
     bboxes = detect(image, face_detector)
     if not bboxes:
-        print("[ERROR] Không tìm thấy khuôn mặt trong CCCD!")
+        print("[ERROR] No face detected")
         return None, "❌ Không tìm thấy khuôn mặt trong ảnh CCCD! Hãy chụp lại với góc nhìn rõ hơn."
 
-    # 3️⃣ Crop khuôn mặt (do CCCD chỉ có 1 khuôn mặt, lấy bbox đầu tiên)
+    # 3️⃣ Crop face
     face_image = crop(image, bboxes[0])
     if face_image is None:
-        print("[ERROR] Không thể crop khuôn mặt từ ảnh CCCD!")
+        print("[ERROR] Can not crop face")
         return None, "❌ Không thể crop khuôn mặt từ ảnh CCCD! Hãy chụp lại với ánh sáng tốt hơn."
 
-    # 4️⃣ Embed khuôn mặt
+    # 4️⃣ Embed face
     face_embedding = embed_facenet(face_image, facenet_model)
 
     if face_embedding is None:
         return None, "❌ Không thể tạo vector embedding từ khuôn mặt!"
 
-    return face_embedding, None  # ✅ Luôn trả về 2 giá trị
+    return face_embedding, None  
 
 def verify_identity(face_embedding, embedding_data, threshold=0.7):
     """
-    Xác thực danh tính bằng cách so sánh khuôn mặt trên CCCD với database embeddings.
+    Verify identity by comparing the face on the CCCD with the database embeddings.
 
     Args:
-        threshold (float): Ngưỡng cosine similarity để xác nhận danh tính.
+    threshold (float): Cosine similarity threshold to confirm identity.
 
     Returns:
-        tuple (bool, float): (Xác thực thành công hay không, Giá trị cosine similarity cao nhất)
+    tuple (bool, float): (Authentication successful or not, Highest cosine similarity value)
+
     """
-    print("[INFO] Trích xuất khuôn mặt từ CCCD...")
+    print("[INFO] Extract face from CCCD...")
     
-    # 1️⃣ Lấy vector đặc trưng từ CCCD
+    # 1️⃣ Extract vector feature
     if face_embedding is None:
         return False, 0.0
 
-    # 2️⃣ Tải database embeddings từ video
+    # 2️⃣ Load embeddings from database extracted from video
     if embedding_data is None:
-        print("[ERROR] Không có embeddings nào để so sánh!")
+        print("[ERROR] Database is empty")
         return False, 0.0
 
-    # 3️⃣ So sánh với tất cả embeddings
+    # 3️⃣ Compare
     max_similarity = 0.0
     best_match = None
 

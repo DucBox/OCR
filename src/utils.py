@@ -13,24 +13,25 @@ from src.config import (
     FACE_DETECTION_MODEL_PATH, FACENET_MODEL_PATH, FACE_EMBEDDINGS_PATH, CORNER_MODEL_PATH, TEXT_MODEL_PATH, VIETOCR_MODEL_PATH
 )
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 def extract_frames(video):
     """
-    Trích xuất frame đầu - giữa - cuối mỗi giây từ video.
-    
+    Extract first - middle - last frame every second from video.
+
     Args:
-        video_path (str): Đường dẫn video.
-    
+    video_path (str): Video path.
+
     Returns:
-        list: Danh sách frames [(sec, frame_pos, frame)].
+    list: List of frames [(sec, frame_pos, frame)].
     """
     cap = video
     if not cap.isOpened():
-        print("[ERROR] Không thể mở video!")
+        print("[ERROR] Can not open video")
         return []
 
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    duration = frame_count / fps  # Thời lượng video
+    duration = frame_count / fps  
 
     print(f"[INFO] FPS: {fps}, Tổng số frames: {frame_count}, Thời lượng: {duration:.2f} giây")
 
@@ -59,13 +60,13 @@ def extract_frames(video):
 
 def detect(image, model):
     """
-    Phát hiện khuôn mặt trên ảnh.
+    Detect faces in an image.
 
     Args:
-        image (numpy.ndarray): Ảnh đầu vào.
+    image (np.ndarray): Input image.
 
     Returns:
-        list: Danh sách bbox (x1, y1, x2, y2).
+    list: List of bboxes (x1, y1, x2, y2).
     """
     image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     results = model(image_rgb)
@@ -79,14 +80,14 @@ def detect(image, model):
 
 def crop(image, bbox):
     """
-    Crop khuôn mặt từ ảnh theo bbox.
+    Crop face from image by bbox.
 
     Args:
-        image (numpy.ndarray): Ảnh đầu vào.
-        bbox (tuple): (x1, y1, x2, y2) tọa độ bbox.
+    image (np.ndarray): Input image.
+    bbox (tuple): (x1, y1, x2, y2) bbox coordinates.
 
     Returns:
-        PIL.Image: Ảnh khuôn mặt đã crop.
+    PIL.Image: Crop face image.
     """
     x1, y1, x2, y2 = bbox
     face_crop = image[y1:y2, x1:x2]
@@ -98,13 +99,14 @@ def crop(image, bbox):
 
 def preprocess_img(face_image):
     """
-    Tiền xử lý ảnh khuôn mặt trước khi đưa vào FaceNet.
+    Preprocess the face image before feeding it into FaceNet.
 
     Args:
-        face_image (PIL.Image): Ảnh khuôn mặt.
+    face_image (PIL.Image): Face image.
 
     Returns:
-        torch.Tensor: Tensor ảnh đã chuẩn hóa.
+    torch.Tensor: Normalized image tensor.
+
     """
     transform = transforms.Compose([
         transforms.Resize((160, 160)),
@@ -115,13 +117,13 @@ def preprocess_img(face_image):
 
 def embed_facenet(face_image, facenet_model):
     """
-    Nhận diện khuôn mặt và tạo vector đặc trưng bằng FaceNet.
+    Face detection and feature vector generation using FaceNet.
 
     Args:
-        face_image (PIL.Image): Ảnh khuôn mặt.
+    face_image (PIL.Image): Face image.
 
     Returns:
-        numpy.ndarray: Vector đặc trưng (512,)
+    numpy.ndarray: Feature vector (512,)
     """
     face_tensor = preprocess_img(face_image).to(device)
     
@@ -132,39 +134,27 @@ def embed_facenet(face_image, facenet_model):
 
 def compute_similarity(vec1, vec2):
     """
-    Tính toán độ tương đồng Cosine giữa hai vector.
+    Calculates the Cosine similarity between two vectors.
 
     Args:
-        vec1 (numpy.ndarray): Vector đặc trưng đầu tiên.
-        vec2 (numpy.ndarray): Vector đặc trưng thứ hai.
+    vec1 (numpy.ndarray): First feature vector.
+    vec2 (numpy.ndarray): Second feature vector.
 
     Returns:
-        float: Giá trị cosine similarity.
+    float: Cosine similarity value.
     """
-    vec1 = np.array(vec1).squeeze()
+        vec1 = np.array(vec1).squeeze()
     vec2 = np.array(vec2).squeeze()
     
     return cosine_similarity([vec1], [vec2])[0][0]
 
 def save_embeddings(embeddings):
-    """
-    Lưu embeddings vào file.
-
-    Args:
-        embeddings (dict): Dictionary chứa các embeddings.
-    """
     with open(FACE_EMBEDDINGS_PATH, "wb") as f:
         pickle.dump(embeddings, f)
     
     print(f"[💾 SAVED] Đã lưu {len(embeddings)} embeddings vào {FACE_EMBEDDINGS_PATH}")
 
 def load_embeddings():
-    """
-    Tải embeddings đã lưu.
-
-    Returns:
-        dict: Dictionary chứa các embeddings.
-    """
     if not os.path.exists(FACE_EMBEDDINGS_PATH):
         print(f"[ERROR] Không tìm thấy database embeddings: {FACE_EMBEDDINGS_PATH}")
         return None
@@ -176,13 +166,13 @@ def load_embeddings():
 
 def get_card_corners(corner_bboxes):
     """
-    Xác định tọa độ 4 góc của thẻ dựa vào bbox của các corners.
+    Determine the coordinates of the 4 corners of the card based on the bbox of the corners.
 
     Args:
-        corner_bboxes (dict): Dictionary chứa bbox của các góc.
+    corner_bboxes (dict): Dictionary containing the bbox of the corners.
 
     Returns:
-        dict: Dictionary chứa tọa độ trung tâm của 4 góc.
+    dict: Dictionary containing the center coordinates of the 4 corners.
     """
     required_corners = {"top_left", "top_right", "bottom_left", "bottom_right"}
     
@@ -199,15 +189,16 @@ def get_card_corners(corner_bboxes):
 
 def transform_perspective(image, corners, output_size=(800, 500)):
     """
-    Biến đổi phối cảnh ảnh CCCD về dạng chuẩn.
+    Transform the perspective of the CCCD image to the standard form.
 
     Args:
-        image (numpy.ndarray): Ảnh gốc.
-        corners (dict): Tọa độ 4 góc của CCCD.
-        output_size (tuple): Kích thước ảnh đầu ra.
+    image (numpy.ndarray): Original image.
+    corners (dict): The 4 corner coordinates of the CCCD.
+    output_size (tuple): The size of the output image.
 
     Returns:
-        numpy.ndarray: Ảnh sau khi transform, hoặc None nếu lỗi.
+    numpy.ndarray: Image after transformation, or None if error.
+
     """
     try:
         if len(corners) != 4:
@@ -238,14 +229,14 @@ def transform_perspective(image, corners, output_size=(800, 500)):
 
 def extract_text(image, model):
     """
-    Nhận diện văn bản từ ảnh đã crop.
+    Recognize text from cropped image.
 
     Args:
-        image (numpy.ndarray): Ảnh vùng chứa text.
-        model (Predictor): Mô hình OCR.
+    image (numpy.ndarray): Image containing text.
+    model (Predictor): OCR model.
 
     Returns:
-        str: Chuỗi ký tự nhận diện được.
+    str: Recognized character string.
     """
     try:
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -259,14 +250,14 @@ def extract_text(image, model):
 
 def compute_iou(box1, box2):
     """
-    Tính toán IoU (Intersection over Union) giữa hai bounding box.
+    Calculates the IoU (Intersection over Union) between two bounding boxes.
 
     Args:
-        box1 (tuple): (x1, y1, x2, y2) tọa độ bbox đầu tiên.
-        box2 (tuple): (x1, y1, x2, y2) tọa độ bbox thứ hai.
+    box1 (tuple): (x1, y1, x2, y2) coordinates of the first bbox.
+    box2 (tuple): (x1, y1, x2, y2) coordinates of the second bbox.
 
     Returns:
-        float: Giá trị IoU.
+    float: IoU value.
     """
     x1 = max(box1[0], box2[0])
     y1 = max(box1[1], box2[1])
@@ -282,14 +273,15 @@ def compute_iou(box1, box2):
 
 def apply_nms(detections, iou_threshold=0.5):
     """
-    Áp dụng Non-Maximum Suppression (NMS) để lọc các bbox bị trùng.
+    Apply Non-Maximum Suppression (NMS) to filter out duplicate bboxes.
 
     Args:
-        detections (list): Danh sách bbox [(bbox, confidence, label)].
-        iou_threshold (float): Ngưỡng IoU để loại bỏ bbox.
+    detections (list): List of bboxes [(bbox, confidence, label)].
+    iou_threshold (float): IoU threshold to remove bboxes.
 
     Returns:
-        dict: Dictionary {label: bbox} chứa bbox tốt nhất cho mỗi góc.
+    dict: Dictionary {label: bbox} containing the best bboxes for each corner.
+
     """
     print("[INFO] Applying NMS...")
     
@@ -318,14 +310,14 @@ def apply_nms(detections, iou_threshold=0.5):
 
 def detect_objects(image, model):
     """
-    Phát hiện đối tượng (góc CCCD, vùng văn bản) trên ảnh bằng YOLO.
+    Detect objects (CCCD corners, text areas) in images using YOLO.
 
     Args:
-        image (numpy.ndarray): Ảnh đầu vào.
-        model (YOLO): Model YOLO đã load.
+    image (numpy.ndarray): Input image.
+    model (YOLO): Loaded YOLO model.
 
     Returns:
-        list: [(bbox, confidence, label), ...]
+    list: [(bbox, confidence, label), ...]
     """
     results = model(image)
     
