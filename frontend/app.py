@@ -126,6 +126,15 @@ if st.session_state.embeddings_done:
         # 🔍 Embed khuôn mặt từ ảnh CCCD
         status = st.empty()  # 👈 Tạo placeholder để xóa trạng thái sau khi chạy xong
         status.write("🧑‍💻 **Đang tạo embeddings từ ảnh CCCD...**")
+        
+        result = embed_face_cccd(face_model, facenet_model, image)
+        st.write(f"🔍 DEBUG: Kết quả embed_face_cccd: {result}")  # ✅ Debug
+
+        if result is None:
+            st.error("❌ Lỗi hệ thống: `embed_face_cccd()` không trả về dữ liệu!")
+            st.stop()
+
+        face_embedding_cccd, error_message = result  # ✅ Giờ chắc chắn sẽ unpack đúng
 
         face_embedding_cccd, error_message = embed_face_cccd(face_model, facenet_model, image_np)
         # status.empty()  # ❌ Xóa dòng trạng thái
