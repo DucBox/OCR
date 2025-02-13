@@ -134,7 +134,6 @@ if st.session_state.embeddings_done:
             st.error("❌ Lỗi hệ thống: `embed_face_cccd()` không trả về dữ liệu!")
             st.stop()
 
-        face_embedding_cccd, error_message = result  # ✅ Giờ chắc chắn sẽ unpack đúng
 
         face_embedding_cccd, error_message = embed_face_cccd(face_model, facenet_model, image_np)
         # status.empty()  # ❌ Xóa dòng trạng thái
