@@ -71,13 +71,12 @@ video_file = st.file_uploader("📂 **Chọn video**", type=["mp4", "avi", "mov"
 if video_file is not None and not st.session_state.embeddings_done:
     st.write("📌 **Đang xử lý video...**")
 
-    # Lưu file video tạm thời
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video:
-        temp_video.write(video_file.read())
-        temp_video_path = temp_video.name
+    # 🟢 Đọc dữ liệu video từ BytesIO
+    video_bytes = video_file.read()
+    video_array = np.frombuffer(video_bytes, np.uint8)
 
-    # Mở video bằng OpenCV
-    video_cap = cv2.VideoCapture(temp_video_path)
+    # 🟢 Giải mã video từ buffer bằng OpenCV
+    video_cap = cv2.VideoCapture())
 
     if not video_cap.isOpened():
         st.error("❌ Không thể mở video! Hãy thử upload lại.")
