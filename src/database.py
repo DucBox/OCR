@@ -8,7 +8,9 @@ import streamlit as st
 # 🔥 Kết nối Firestore
 # cred = credentials.Certificate("src/face-embeddings-firebase-adminsdk-fbsvc-3ab14b0c36.json") 
 # 🟢 Lấy secrets từ Streamlit Cloud
-firebase_secrets = json.loads(st.secrets["firebase"])
+# firebase_secrets = json.loads(st.secrets["firebase"])
+st.write(st.secrets["firebase"])
+firebase_secrets = st.secrets["firebase"]
 # 🔥 Khởi tạo Firebase chỉ khi chưa được init
 if not firebase_admin._apps:
     cred = credentials.Certificate(firebase_secrets)  # ✅ Truyền dict trực tiếp
