@@ -125,7 +125,6 @@ if st.session_state.embeddings_done:
 
         # 🔍 Embed khuôn mặt từ ảnh CCCD
         status = st.empty()  # 👈 Tạo placeholder để xóa trạng thái sau khi chạy xong
-        status.write("🧑‍💻 **Đang xử lý ảnh CCCD...**")
         face_embedding_cccd, error = embed_face_cccd(face_model, facenet_model, image_np)
         # status.empty()  # ❌ Xóa dòng trạng thái
         if error:
