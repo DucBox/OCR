@@ -127,7 +127,7 @@ if st.session_state.embeddings_done:
         status = st.empty()  # 👈 Tạo placeholder để xóa trạng thái sau khi chạy xong
         status.write("🧑‍💻 **Đang tạo embeddings từ ảnh CCCD...**")
         face_embedding_cccd = embed_face_cccd(face_model, facenet_model, image_np)
-        status.empty()  # ❌ Xóa dòng trạng thái
+        # status.empty()  # ❌ Xóa dòng trạng thái
         
         user_embeddings = get_embeddings_from_firestore(user_id)
         if user_embeddings is None:
@@ -138,7 +138,7 @@ if st.session_state.embeddings_done:
         status = st.empty()
         status.write("🔍 **Đang xác thực danh tính...**")
         verified, max_similarity = verify_identity(face_embedding_cccd, user_embeddings, threshold = THRESHOLD)
-        status.empty()
+        # status.empty()
 
         st.write(f"📊 **Cosine Similarity:** {max_similarity:.4f}")
 
