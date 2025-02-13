@@ -68,19 +68,22 @@ st.write(f"Welcome {user_id} to my web")
 st.subheader("🎥 Upload Video để tạo Face Embeddings")
 video_file = st.file_uploader("📂 **Chọn video**", type=["mp4", "avi", "mov"])
 
-if video_file is not None and not st.session_state.embeddings_done:
+if video_file is not None and not st.session_state.get("embeddings_done", False):
     st.write("📌 **Đang xử lý video...**")
 
-    # 🟢 Đọc dữ liệu video từ BytesIO
-    video_bytes = video_file.read()
-    video_array = np.frombuffer(video_bytes, np.uint8)
+    # ✅ Lưu file video vào một tệp tạm thời
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video:
+        temp_video.write(video_file.read())
+        temp_video_path = temp_video.name  # Lấy đường dẫn tệp tạm
 
-    # 🟢 Giải mã video từ buffer bằng OpenCV
-    video_cap = cv2.VideoCapture()
+    # ✅ Mở video bằng OpenCV
+    video_cap = cv2.VideoCapture(temp_video_path)
 
     if not video_cap.isOpened():
         st.error("❌ Không thể mở video! Hãy thử upload lại.")
         st.stop()
+    else:
+        st.success("✅ Video đã được mở thành công!")
 
     # 🟢 Chạy pipeline embedding
     embeddings = embedding(face_model, facenet_model, video_cap)
