@@ -7,9 +7,6 @@ import streamlit as st
 # 🟢 Lấy secrets từ Streamlit Cloud
 firebase_secrets = st.secrets["firebase"]
 
-# 🔍 Debug: Kiểm tra loại dữ liệu
-st.write("🔍 DEBUG: Firebase Secrets Type:", type(firebase_secrets))
-
 # 🔥 Convert AttrDict về Dictionary
 firebase_secrets_dict = dict(firebase_secrets)
 
