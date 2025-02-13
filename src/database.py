@@ -7,8 +7,8 @@ import streamlit as st
 firebase_secrets = st.secrets["firebase"]
 
 # 🔥 Kết nối Firestore
-cred = credentials.Certificate("src/face-embeddings-firebase-adminsdk-fbsvc-3ab14b0c36.json") 
-# cred = credentials.Certificate(firebase_secrets)
+# cred = credentials.Certificate("src/face-embeddings-firebase-adminsdk-fbsvc-3ab14b0c36.json") 
+cred = credentials.Certificate(firebase_secrets)
 if not firebase_admin._apps:
     firebase_admin.initialize_app(cred)
 db = firestore.client()
