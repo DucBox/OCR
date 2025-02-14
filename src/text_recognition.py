@@ -5,7 +5,7 @@ from PIL import Image
 from src.config import VIETOCR_MODEL_PATH
 
 def load_vietocr():
-   """
+    """
     Load VietOCR model to recognize text.
 
     Returns:
@@ -17,7 +17,7 @@ def load_vietocr():
 
     config = Cfg.load_config_from_name('vgg_transformer')
     config['weights'] = VIETOCR_MODEL_PATH 
-    config['device'] = 
+    config['device'] = 'cpu'  
 
     return Predictor(config)
 
@@ -35,11 +35,11 @@ def extract_text_from_boxes(image, boxes, detector):
     """
     texts = {}
     for label, (x1, y1, x2, y2) in boxes.items():
-        cropped_image = image[y1:y2, x1:x2]  
+        cropped_image = image[y1:y2, x1:x2]  # Crop vùng chứa text
         cropped_image_rgb = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
         cropped_image_pil = Image.fromarray(cropped_image_rgb)
 
-        text = detector.predict(cropped_image_pil).strip()  
+        text = detector.predict(cropped_image_pil).strip()  # Nhận diện text
         texts[label] = text
 
         print(f"[INFO] Extracted {label}: {text}")

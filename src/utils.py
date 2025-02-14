@@ -143,7 +143,7 @@ def compute_similarity(vec1, vec2):
     Returns:
     float: Cosine similarity value.
     """
-        vec1 = np.array(vec1).squeeze()
+    vec1 = np.array(vec1).squeeze()
     vec2 = np.array(vec2).squeeze()
     
     return cosine_similarity([vec1], [vec2])[0][0]
