@@ -88,6 +88,13 @@ print(get_embeddings_from_firestore("test_user"))
 
 ---
 
+🖥️ Web UI
+
+Below is a preview of the application UI:
+
+![Web UI](WebUI.png)
+
+
 ## 📜 License & Author
 - 📌 **Author:** Ngo Quang Duc
 - 📌 **GitHub:** https://github.com/DucBox
