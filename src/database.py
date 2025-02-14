@@ -4,20 +4,18 @@ import numpy as np
 import json
 import streamlit as st
 
-# 🟢 Lấy secrets từ Streamlit Cloud
+# 🟢 Secrets from Streamlit Cloud
 firebase_secrets = st.secrets["firebase"]
 
 # 🔥 Convert AttrDict về Dictionary
 firebase_secrets_dict = dict(firebase_secrets)
 
-# 🔥 Khởi tạo Firebase chỉ khi chưa được init
 if not firebase_admin._apps:
-    cred = credentials.Certificate(firebase_secrets_dict)  # ✅ Truyền dict đúng kiểu
+    cred = credentials.Certificate(firebase_secrets_dict)  
     firebase_admin.initialize_app(cred)
 
 db = firestore.client()
 
-# 🟢 Kiểm tra kết nối Firestore
 try:
     test_doc_ref = db.collection("test").document("streamlit_check")
     test_doc_ref.set({"status": "OK"})
@@ -25,7 +23,6 @@ try:
 except Exception as e:
     st.error(f"❌ ERROR: Firestore không hoạt động!\n{e}")
     
-# ✅ Hàm lưu embeddings vào Firestore theo user_id
 def save_embeddings_to_firestore(user_id, embeddings):
     """
     Lưu embeddings vào Firestore theo user_id.
@@ -45,10 +42,9 @@ def save_embeddings_to_firestore(user_id, embeddings):
         else:
             embeddings_serializable[k] = v
 
-    doc_ref.set({"embeddings": embeddings_serializable})  # ✅ Lưu đúng format JSON
+    doc_ref.set({"embeddings": embeddings_serializable})  
     print(f"✅ Đã lưu embeddings cho user `{user_id}` vào Firestore")
 
-# ✅ Hàm lấy embeddings từ Firestore theo user_id
 def get_embeddings_from_firestore(user_id):
     """
     Lấy embeddings từ Firestore theo user_id.
@@ -64,7 +60,7 @@ def get_embeddings_from_firestore(user_id):
     
     if doc.exists:
         data = doc.to_dict()["embeddings"]
-        return {k: np.array(v) for k, v in data.items()}  # ✅ Chuyển list về numpy array
+        return {k: np.array(v) for k, v in data.items()}  
     else:
-        print(f"❌ Không tìm thấy embeddings cho user `{user_id}`")
+        print(f" Không tìm thấy embeddings cho user `{user_id}`")
         return None
