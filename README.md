@@ -9,7 +9,7 @@ This is a system for face verification and ID card information extraction. The p
 
 ### 🔹 1. Clone the Project
 ```bash
-git clone https://github.com/your-username/your-project.git
+[git clone https://github.com/your-username/your-project.git](https://github.com/DucBox/OCR.git)
 cd your-project
 ```
 
@@ -90,7 +90,7 @@ print(get_embeddings_from_firestore("test_user"))
 
 ## 📜 License & Author
 - 📌 **Author:** Ngo Quang Duc
-- 📌 **GitHub:** [your-username](https://github.com/your-username)
+- 📌 **GitHub:** https://github.com/DucBox
 - 📌 **Contact:** quangducngo0811@gmail.com or duc.nq213697@sis.hust.edu.vn
 
 
