@@ -1,18 +1,42 @@
 import firebase_admin
+from src.config import DATABASE_CONFIG_PATH
 from firebase_admin import credentials, firestore
 import numpy as np
 import json
 import streamlit as st
+import os
 
-# 🟢 Secrets from Streamlit Cloud
-firebase_secrets = st.secrets["firebase"]
+is_streamlit_cloud = False  
 
-# 🔥 Convert AttrDict về Dictionary
-firebase_secrets_dict = dict(firebase_secrets)
+try:
+    if hasattr(st, "secrets") and st.secrets:
+        print("🌍 Đang chạy trên **Streamlit Cloud**")
+        is_streamlit_cloud = "firebase" in st.secrets
+except (AttributeError, FileNotFoundError):
+    print("💻 Đang chạy trên **Local**")
+    is_streamlit_cloud = False
 
-if not firebase_admin._apps:
-    cred = credentials.Certificate(firebase_secrets_dict)  
-    firebase_admin.initialize_app(cred)
+if is_streamlit_cloud:
+    print("🌍 Đang chạy trên **Streamlit Cloud** - Dùng `st.secrets`")
+    firebase_secrets = dict(st.secrets["firebase"])
+
+    if not firebase_admin._apps:
+        cred = credentials.Certificate(firebase_secrets)
+        firebase_admin.initialize_app(cred)
+
+else:
+    print("💻 Đang chạy trên **Local** - Dùng file JSON")
+
+    # 🔥 Đường dẫn file JSON
+    firebase_config_path = DATABASE_CONFIG_PATH
+
+    if os.path.exists(firebase_config_path):
+        if not firebase_admin._apps:
+            cred = credentials.Certificate(firebase_config_path)
+            firebase_admin.initialize_app(cred)
+    else:
+        print(f"❌ Không tìm thấy Firebase config tại: {firebase_config_path}")
+        exit(1)  
 
 db = firestore.client()
 
@@ -33,7 +57,6 @@ def save_embeddings_to_firestore(user_id, embeddings):
     """
     doc_ref = db.collection("face_embeddings").document(user_id)
 
-    # 🔹 Chuyển numpy array thành list để lưu JSON hợp lệ
     embeddings_serializable = {}
 
     for k, v in embeddings.items():
