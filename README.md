@@ -9,8 +9,8 @@ This is a system for face verification and ID card information extraction. The p
 
 ### 🔹 1. Clone the Project
 ```bash
-[git clone https://github.com/your-username/your-project.git](https://github.com/DucBox/OCR.git)
-cd your-project
+git clone https://github.com/DucBox/OCR.git
+cd OCR
 ```
 
 ### 🔹 2. Install Dependencies
