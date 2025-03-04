@@ -12,7 +12,7 @@ import tempfile
 
 # Import các module xử lý
 from src.config import THRESHOLD
-from src.config import CORNER_MODEL_PATH, TEXT_MODEL_PATH, VIETOCR_MODEL_PATH, FACE_DETECTION_MODEL_PATH
+from src.config import CORNER_MODEL_PATH, TEXT_MODEL_PATH, VIETOCR_MODEL_PATH, FACE_DETECTION_MODEL_PATH, FACE_CARD_MODEL_PATH
 from src.utils import detect, embed_facenet, compute_similarity
 from src.face_embedding import embedding
 from src.face_verification import embed_face_cccd, verify_identity
@@ -40,6 +40,11 @@ def get_face_model():
     return YOLO(FACE_DETECTION_MODEL_PATH)
 
 @st.cache_resource
+def get_face_card_model():
+    from ultralytics import YOLO
+    return YOLO(FACE_CARD_MODEL_PATH)
+
+@st.cache_resource
 def get_facenet_model():
     from facenet_pytorch import InceptionResnetV1
     return InceptionResnetV1(pretrained="vggface2").eval()
@@ -52,6 +57,7 @@ def get_ocr_model():
 corner_model = get_corner_model()
 text_model = get_text_model()
 face_model = get_face_model()
+face_card_model = get_face_card_model()
 facenet_model = get_facenet_model()
 ocr_model = get_ocr_model()
 
@@ -124,7 +130,7 @@ if st.session_state.embeddings_done:
 
         # 🔍 Embed khuôn mặt từ ảnh CCCD
         status = st.empty()  # 👈 Tạo placeholder để xóa trạng thái sau khi chạy xong
-        face_embedding_cccd, error = embed_face_cccd(face_model, facenet_model, image_np)
+        face_embedding_cccd, error = embed_face_cccd(face_card_model, facenet_model, image_np)
         # status.empty()  # ❌ Xóa dòng trạng thái
         if error:
             st.error(error)  # Hiển thị lỗi trên UI

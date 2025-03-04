@@ -2,7 +2,7 @@ import cv2
 from ultralytics import YOLO
 from src.utils import detect, crop, embed_facenet, load_embeddings, compute_similarity
 from src.config import (
-    FACE_DETECTION_MODEL_PATH, FACENET_MODEL_PATH
+    FACE_DETECTION_MODEL_PATH, FACENET_MODEL_PATH, FACE_CARD_MODEL_PATH
 )
 
 def embed_face_cccd(face_detector, facenet_model, image):

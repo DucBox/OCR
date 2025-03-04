@@ -10,7 +10,7 @@ from ultralytics import YOLO
 from vietocr.tool.predictor import Predictor
 from vietocr.tool.config import Cfg
 from src.config import (
-    FACE_DETECTION_MODEL_PATH, FACENET_MODEL_PATH, FACE_EMBEDDINGS_PATH, CORNER_MODEL_PATH, TEXT_MODEL_PATH, VIETOCR_MODEL_PATH
+    FACE_DETECTION_MODEL_PATH, FACENET_MODEL_PATH, FACE_EMBEDDINGS_PATH, CORNER_MODEL_PATH, TEXT_MODEL_PATH, VIETOCR_MODEL_PATH, FACE_CARD_MODEL_PATH
 )
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
