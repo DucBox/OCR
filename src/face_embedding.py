@@ -18,7 +18,6 @@ def embedding(face_detector, facenet_model, video):
     """
     print(f"[INFO] Start processing Video")
 
-    # 1️⃣ Extract frames from video
     frames = extract_frames(video)
     if not frames:
         print("[ERROR] No frame extracted")
@@ -26,24 +25,19 @@ def embedding(face_detector, facenet_model, video):
 
     embeddings = {}
 
-    # 2️⃣ Process each frame
     for sec, frame_pos, frame in frames:
-        # 3️⃣ Detect Face
         bboxes = detect(frame, face_detector)
         if not bboxes:
             print(f"[WARNING] No face detected at {sec}")
             continue
 
         for i, bbox in enumerate(bboxes):
-            # 4️⃣ Crop Face
             face_image = crop(frame, bbox)
             if face_image is None:
                 continue
 
-            # 5️⃣ Embed using FaceNet
             face_embedding = embed_facenet(face_image, facenet_model)
 
-            # 6️⃣ Save into dictionary
             key = f"frame_{sec}_{frame_pos}_{i}"
             embeddings[key] = face_embedding
 

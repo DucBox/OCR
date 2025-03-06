@@ -16,24 +16,20 @@ def embed_face_cccd(face_detector, facenet_model, image):
     n[].ndarray | None: Feature vector if face found, None if no face.
 
     """
-    # 1️⃣ Read CCCD image
     if image is None:
         print("[ERROR] Can not load image!")
         return None, "❌ Không thể đọc ảnh CCCD! Hãy chụp lại ảnh rõ nét hơn."
 
-    # 2️⃣ Detect face
     bboxes = detect(image, face_detector)
     if not bboxes:
         print("[ERROR] No face detected")
         return None, "❌ Không tìm thấy khuôn mặt trong ảnh CCCD! Hãy chụp lại với góc nhìn rõ hơn."
 
-    # 3️⃣ Crop face
     face_image = crop(image, bboxes[0])
     if face_image is None:
         print("[ERROR] Can not crop face")
         return None, "❌ Không thể crop khuôn mặt từ ảnh CCCD! Hãy chụp lại với ánh sáng tốt hơn."
 
-    # 4️⃣ Embed face
     face_embedding = embed_facenet(face_image, facenet_model)
 
     if face_embedding is None:
@@ -54,16 +50,13 @@ def verify_identity(face_embedding, embedding_data, threshold=0.7):
     """
     print("[INFO] Extract face from CCCD...")
     
-    # 1️⃣ Extract vector feature
     if face_embedding is None:
         return False, 0.0
 
-    # 2️⃣ Load embeddings from database extracted from video
     if embedding_data is None:
         print("[ERROR] Database is empty")
         return False, 0.0
 
-    # 3️⃣ Compare
     max_similarity = 0.0
     best_match = None
 

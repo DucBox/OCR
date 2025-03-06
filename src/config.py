@@ -1,11 +1,11 @@
 import os
 
-# 🏠 Định nghĩa thư mục gốc & thư mục models
+# FOLDER PATH
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 EMBEDDINGS_DIR = os.path.join(BASE_DIR, "embeddings") 
 
-# 📌 Định nghĩa đường dẫn các model
+# MODEL
 CORNER_MODEL_PATH = os.path.join(MODELS_DIR, "card_detect.pt")
 TEXT_MODEL_PATH = os.path.join(MODELS_DIR, "text_recog.pt")
 VIETOCR_MODEL_PATH = os.path.join(MODELS_DIR, "transformerocr.pth")
